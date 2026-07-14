@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Carbon Footprint Calculator</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#eef7ee;
+padding:20px;
+}
+
+.container{
+width:700px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 0 10px gray;
+}
+
+h1{
+text-align:center;
+color:green;
+}
+
+label{
+font-weight:bold;
+}
+
+input,select{
+width:100%;
+padding:8px;
+margin:8px 0 15px;
+}
+
+button{
+width:100%;
+padding:12px;
+background:green;
+color:white;
+border:none;
+cursor:pointer;
+margin-top:8px;
+}
+
+button:hover{
+background:darkgreen;
+}
+
+.delete{
+background:red;
+}
+
+.delete:hover{
+background:darkred;
+}
+
+.result{
+margin-top:20px;
+background:#e8f5e9;
+padding:15px;
+border-radius:8px;
+}
+
+.download{
+background:#0066cc;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+th,td{
+border:1px solid gray;
+padding:8px;
+text-align:center;
+}
+
+#recordsSection{
+display:none;
+}
+
+a{
+color:green;
+font-weight:bold;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<h1>🌱 Carbon Footprint Calculator</h1>
+
+
+<label>Name</label>
+<input type="text" id="name">
+
+
+<label>Travel Distance per Day (KM)</label>
+<input type="number" id="distance">
+
+
+<label>Transport Mode</label>
+
+<select id="transport">
+
+<option value="0">Walking/Cycling</option>
+<option value="0.05">Train</option>
+<option value="0.10">Bus</option>
+<option value="0.12">Two Wheeler</option>
+<option value="0.21">Car</option>
+
+</select>
+
+
+<label>Laptop/Computer Usage (Hours/Day)</label>
+<input type="number" id="computer">
+
+
+<label>AC Usage (Hours/Day)</label>
+<input type="number" id="ac">
+
+
+<label>Fan Usage (Hours/Day)</label>
+<input type="number" id="fan">
+
+
+<label>Paper Consumption (Pages/Month)</label>
+<input type="number" id="paper">
+
+
+<button onclick="calculate()">
+Calculate Carbon Footprint
+</button>
+
+
+<button onclick="newPerson()">
+Next Person / New Entry
+</button>
+
+
+<div class="result" id="result"></div>
+
+
+<br>
+
+
+<a onclick="showRecords()">
+🔗 View Previous Carbon Footprint Records
+</a>
+
+
+
+<div id="recordsSection">
+
+
+<h3>Previous Carbon Footprint Records</h3>
+
+
+<table>
+
+<tr>
+
+<th>Name</th>
+<th>Date</th>
+<th>Carbon (kg CO₂)</th>
+<th>Category</th>
+<th>Action</th>
+
+</tr>
+
+
+<tbody id="records"></tbody>
+
+
+</table>
+
+
+<br>
+
+
+<button class="download" onclick="downloadRecords()">
+📥 Download Records
+</button>
+
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+
+function calculate(){
+
+
+let name=document.getElementById("name").value;
+
+let distance=Number(document.getElementById("distance").value);
+
+let transport=Number(document.getElementById("transport").value);
+
+let computer=Number(document.getElementById("computer").value);
+
+let ac=Number(document.getElementById("ac").value);
+
+let fan=Number(document.getElementById("fan").value);
+
+let paper=Number(document.getElementById("paper").value);
+
+
+
+let transportCO2=distance*transport*365;
+
+let computerCO2=computer*0.05*365;
+
+let acCO2=ac*1.2*365;
+
+let fanCO2=fan*0.03*365;
+
+let paperCO2=paper*0.005;
+
+
+
+let total =
+transportCO2+
+computerCO2+
+acCO2+
+fanCO2+
+paperCO2;
+
+
+
+let category;
+
+
+if(total<1000)
+{
+category="Low Impact 🌱";
+}
+
+else if(total<=3000)
+{
+category="Moderate Impact 🌿";
+}
+
+else
+{
+category="High Impact 🌍";
+}
+
+
+
+/* Activity based suggestions */
+
+let suggestion="";
+
+
+if(transport==0)
+{
+suggestion +=
+"🚶 Walking/Cycling is an excellent zero-emission transport choice.<br><br>";
+}
+
+else if(transportCO2>100)
+{
+suggestion +=
+"🚍 Consider public transport or carpooling to reduce transport emissions.<br><br>";
+}
+
+
+if(acCO2>1000)
+{
+suggestion +=
+"❄ AC usage is the major contributor. Reduce AC hours and use energy-efficient cooling methods.<br><br>";
+}
+
+else if(acCO2>500)
+{
+suggestion +=
+"❄ Reduce AC usage to save electricity.<br><br>";
+}
+
+
+if(computerCO2>100)
+{
+suggestion +=
+"💻 Use power-saving mode and switch off computers when not required.<br><br>";
+}
+
+
+if(fanCO2>100)
+{
+suggestion +=
+"💡 Switch off fans and electrical devices when not required.<br><br>";
+}
+
+
+if(paperCO2>20)
+{
+suggestion +=
+"📄 Reduce paper printing and use digital documents.<br><br>";
+}
+
+
+if(suggestion=="")
+{
+suggestion="🌱 Continue your sustainable lifestyle.";
+}
+
+
+
+document.getElementById("result").innerHTML=
+
+"<h3>Result</h3>"+
+
+"Name: "+name+
+
+"<br>Carbon Emission: <b>"+
+total.toFixed(2)+
+" kg CO₂/year</b>"+
+
+"<br>Category: "+category+
+
+"<h3>Suggestions</h3>"+
+
+suggestion;
+
+
+
+let record={
+
+name:name,
+
+date:new Date().toLocaleDateString(),
+
+carbon:total.toFixed(2),
+
+category:category
+
+};
+
+
+
+let data =
+JSON.parse(localStorage.getItem("carbonRecords")) || [];
+
+
+data.push(record);
+
+
+localStorage.setItem(
+"carbonRecords",
+JSON.stringify(data)
+);
+
+
+}
+
+
+
+function showRecords(){
+
+let section=document.getElementById("recordsSection");
+
+
+if(section.style.display=="none")
+{
+
+section.style.display="block";
+
+displayRecords();
+
+}
+
+else
+{
+
+section.style.display="none";
+
+}
+
+}
+
+
+
+
+function displayRecords(){
+
+
+let data =
+JSON.parse(localStorage.getItem("carbonRecords")) || [];
+
+
+let output="";
+
+
+data.forEach(function(r,index){
+
+
+output +=
+
+"<tr>"+
+
+"<td>"+r.name+"</td>"+
+
+"<td>"+r.date+"</td>"+
+
+"<td>"+r.carbon+"</td>"+
+
+"<td>"+r.category+"</td>"+
+
+"<td>"+
+"<button class='delete' onclick='deleteRecord("+index+")'>Delete</button>"+
+"</td>"+
+
+"</tr>";
+
+});
+
+
+document.getElementById("records").innerHTML=output;
+
+
+}
+
+
+
+function deleteRecord(index){
+
+
+let data =
+JSON.parse(localStorage.getItem("carbonRecords")) || [];
+
+
+data.splice(index,1);
+
+
+localStorage.setItem(
+"carbonRecords",
+JSON.stringify(data)
+);
+
+
+displayRecords();
+
+
+}
+
+
+
+function downloadRecords(){
+
+
+let data =
+JSON.parse(localStorage.getItem("carbonRecords")) || [];
+
+
+if(data.length==0)
+{
+
+alert("No records available");
+
+return;
+
+}
+
+
+
+let csv =
+"Name,Date,Carbon (kg CO2),Category\n";
+
+
+
+data.forEach(function(r){
+
+csv +=
+r.name+","+
+r.date+","+
+r.carbon+","+
+r.category+
+"\n";
+
+});
+
+
+
+let blob =
+new Blob([csv],
+{type:"text/csv"});
+
+
+
+let link=document.createElement("a");
+
+
+link.href=
+URL.createObjectURL(blob);
+
+
+link.download=
+"Carbon_Footprint_Records.csv";
+
+
+link.click();
+
+
+}
+
+
+
+
+function newPerson(){
+
+
+document.getElementById("name").value="";
+document.getElementById("distance").value="";
+document.getElementById("computer").value="";
+document.getElementById("ac").value="";
+document.getElementById("fan").value="";
+document.getElementById("paper").value="";
+
+
+document.getElementById("result").innerHTML=
+"Ready for next person entry.";
+
+}
+
+
+
+</script>
+
+
+</body>
+
+</html>
